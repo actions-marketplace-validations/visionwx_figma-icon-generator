@@ -1,7 +1,0 @@
-export figmaFileUrl=https://www.figma.com/file/dl3xK2kay66wdgJiCaV0wy/Konec-MVNO-Icon?node-id=0%3A1
-export figmaToken=figd__mOamb3eibciJ3NZgS34dxK0RQEmmpZ2Kr0Bnhbv
-export figmaComponentPrefix=icon/
-export fontFamilyName=iconfont
-export outputFolder=out
-
-https://n2.urltosub.com/link/EmtHjT7fgez5f553?clash=4
