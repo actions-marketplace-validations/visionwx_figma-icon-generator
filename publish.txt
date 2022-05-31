@@ -1,0 +1,10 @@
+
+- Update code
+- npm run build
+- test...
+- git add -A
+- git commit -m ""
+- git push
+- git tag v...
+- git push --tag
+

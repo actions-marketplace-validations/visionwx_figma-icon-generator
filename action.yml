@@ -1,0 +1,26 @@
+name: 'Figma IconFont Generator'
+description: 'Figma IconFont Generator'
+author: 'VisionWX'
+branding:
+  icon: 'upload'
+  color: 'gray-dark'
+inputs:
+  figmaFileUrl:
+    description: 'Figma File Url'
+    required: true
+  figmaToken:
+    description: 'Figma Token'
+    required: true
+  figmaComponentPrefix:
+    description: 'Figma Component Prefix'
+    required: true
+  fontFamilyName:
+    description: 'The Icon Font Family Name'
+    required: true
+  outputFolder:
+    description: 'The Ouput Folder'
+    required: true
+
+runs:
+  using: 'node16'
+  main: 'dist/main/index.js'
