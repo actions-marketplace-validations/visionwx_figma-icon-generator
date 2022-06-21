@@ -31,6 +31,7 @@ const figmaFileUrl = getInputPara("figmaFileUrl");
 const figmaToken   = getInputPara("figmaToken");
 const figmaComponentPrefix = getInputPara("figmaComponentPrefix");
 const fontFamilyName = getInputPara("fontFamilyName");
+const cssClassPrefix = getInputPara("cssClassPrefix");
 const outputFolder   = getInputPara("outputFolder");
 
 
@@ -55,14 +56,15 @@ console.log(figmaToken);
 function iconfontGeneratorOptions(
   svgFolder:string,
   outFolder:string,
-  fontFamilyName:string
+  fontFamilyName:string,
+  cssClassPrefix:string,
 ):any {
   return {
     paths              : getPaths([svgFolder + "/svg/*.svg"]),
     outputDir          : outFolder,
     fontName           : fontFamilyName,
     silent             : false,
-    classPrefix        : fontFamilyName,
+    classPrefix        : cssClassPrefix,
     normalize          : true,
     round              : 0,
     fixedWidth         : true,
@@ -89,6 +91,7 @@ export default class FigmaIconGenerator {
       svgOutFolder,
       iconfontOutFolder,
       fontFamilyName,
+      cssClassPrefix
     );
     // 3. start download
     console.log("----> start convert to iconfont");

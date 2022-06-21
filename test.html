@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Sign In with Konec Mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script
+      type="module"
+      crossorigin
+      src="https://res.cloudinary.com/omc-electronics/raw/upload/v1653781440/konec-universal-login-assets/assets/index.436db2a5_bsr3kr.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://res.cloudinary.com/omc-electronics/raw/upload/v1653781440/konec-universal-login-assets/assets/index.8ae77664_bzw2vz.css"
+    />
+  </head>
+  <body>
+    <div class="min-h-screen flex relative" id="login-wrapper">
+      <div
+        class="absolute inset-0 min-h-screen min-w-full blur-sm bg-no-repeat bg-cover block md:hidden"
+        id="form-layout"
+      ></div>
+      <div class="basis-full md:basis-1/2 grid place-items-center relative">
+        <div
+          class="bg-white px-8 rounded-lg md:p-0 md:rounded-none relative z-20 shadow-md border md:border-none md:shadow-none"
+          id="form-wrapper"
+        >
+          <div class="pt-10 mb-6" id="card-wrapper">
+            <h1
+              class="font-BwSeidoRoundDEMO font-bold text-4xl tracking-wide mb-4"
+              id="prompt-title"
+            ></h1>
+            <p
+              class="font-BwSeidoRoundDEMO text-sm hidden"
+              id="send-recovery-email-instruction"
+            >
+              Forgot your account’s password? Enter your email address and we’ll
+              send you a recovery link.
+            </p>
+            <div
+              id="error-message"
+              class="bg-red-500 text-white px-2 py-2 hidden"
+            ></div>
+          </div>
+          <form onsubmit="return false;" method="post" id="form">
+            <div
+              class="inputs grid grid-cols-1 gap-3 md:gap-6 mb-6"
+              id="forms"
+            ></div>
+
+            <div class="captcha-container form-group"></div>
+            <div class="flex flex-col py-6 space-y-2" id="btns"></div>
+          </form>
+          <p
+            class="pt-8 pb-2 text-center font-SharpSansDispNo1 font-medium text-[0.75rem] px-8 block md:hidden"
+          >
+            Need Help?
+            <a
+              href="#"
+              target="_blank"
+              class="text-caribbean-green-500 hover:underline"
+              >Contact Us</a
+            ><br />
+            Copyright © 2020 - 2021 Konec Australia. All rights reserved.
+          </p>
+        </div>
+        <p
+          class="absolute inset-x-0 bottom-6 text-center font-SharpSansDispNo1 font-medium text-sm md:text-[#5A5A5A] text-white/80 hidden md:block"
+        >
+          Need Help?
+          <a
+            href="#"
+            target="_blank"
+            class="text-caribbean-green-500 hover:underline"
+            >Contact Us</a
+          ><br />
+          Copyright © 2020 - 2021 Konec Australia. All rights reserved.
+        </p>
+      </div>
+      <div
+        class="basis-0 md:basis-1/2 relative bg-top bg-no-repeat bg-cover"
+        id="banner"
+      ></div>
+    </div>
+
+    <!--[if IE 8]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/ie8/0.2.5/ie8.js"></script>
+    <![endif]-->
+
+    <!--[if lte IE 9]>
+      <script src="https://cdn.auth0.com/js/polyfills/1.0/base64.min.js"></script>
+      <script src="https://cdn.auth0.com/js/polyfills/1.0/es5-shim.min.js"></script>
+    <![endif]-->
+
+    <script src="https://cdn.auth0.com/js/auth0/9.18/auth0.min.js"></script>
+    <script src="https://cdn.auth0.com/js/polyfills/1.0/object-assign.min.js"></script>
+    <script id="template-title" type="x-tmpl-mustache">
+      {{ title }}
+    </script>
+    <script id="template-input" type="x-tmpl-mustache">
+      {{#forms}}
+        <div class="relative">
+          <label class="form-title" htmlFor="{{id}}">
+            {{label}}
+          </label>
+          <input type="{{type}}" class="form-main" id="{{id}}"/>
+          {{#forgotPassword}}
+            <button
+              class="absolute -bottom-6 right-0 text-sm font-BwSeidoRoundDEMO font-medium text-[#000000]/40 hover:text-caribbean-green-500"
+              type="button"
+              id="forgot-password-btn"
+              >
+                Forgot Your Password?
+            </button>
+          {{/forgotPassword}}
+          <div class="form-error-msg" id="form-error-msg-{{id}}"></div>
+        </div>
+      {{/forms}}
+    </script>
+
+    <script id="template-button" type="x-tmpl-mustache">
+      {{#buttons}}
+        <button class="{{class}}" id="{{id}}" type="{{type}}">{{name}}</button>
+      {{/buttons}}
+    </script>
+
+    <script>
+      window.addEventListener("load", function () {
+        var config = JSON.parse(
+          decodeURIComponent(escape(window.atob("@@config@@")))
+        );
+
+        var leeway = config.internalOptions.leeway;
+        if (leeway) {
+          var convertedLeeway = parseInt(leeway);
+
+          if (!isNaN(convertedLeeway)) {
+            config.internalOptions.leeway = convertedLeeway;
+          }
+        }
+
+        var params = Object.assign(
+          {
+            overrides: {
+              __tenant: config.auth0Tenant,
+              __token_issuer: config.authorizationServer.issuer,
+            },
+            domain: config.auth0Domain,
+            clientID: config.clientID,
+            redirectUri: config.callbackURL,
+            responseType: "code",
+          },
+          config.internalOptions
+        );
+
+        var webAuth = new auth0.WebAuth(params);
+        var databaseConnection = "konec-mvno-connection";
+        var captcha = webAuth.renderCaptcha(
+          document.querySelector(".captcha-container")
+        );
+
+        var loadingEle =
+          '<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" class="animate-ckw origin-center stroke-2"><path d="M13.896 5.50807L5.65196 10.2361C5.22462 10.4744 4.86867 10.8225 4.62087 11.2444C4.37308 11.6663 4.24243 12.1468 4.24243 12.6361C4.24243 13.1254 4.37308 13.6058 4.62087 14.0277C4.86867 14.4496 5.22462 14.7977 5.65196 15.0361L14.424 19.8361C14.8522 20.0702 15.3352 20.1855 15.823 20.17C16.3108 20.1546 16.7856 20.0089 17.1982 19.7482C17.6107 19.4874 17.946 19.1211 18.1693 18.6871C18.3925 18.2531 18.4957 17.7673 18.468 17.2801L18 7.74007C17.9735 7.27297 17.8281 6.82037 17.5778 6.42514C17.3274 6.02992 16.9803 5.70516 16.5693 5.48163C16.1583 5.2581 15.697 5.14321 15.2292 5.14784C14.7614 5.15247 14.3025 5.27646 13.896 5.50807V5.50807Z" strokeMiterlimit="10" stroke="#fff"/></svg>';
+
+        function login(e) {
+          e.preventDefault();
+          removeError();
+          hideInputErrorMsg();
+          var button = this;
+          var username = document.getElementById("email").value;
+          var password = document.getElementById("password").value;
+
+          if (!username) {
+            showInputErrorMsg("email", "Please enter email");
+            return;
+          }
+
+          if (!validateEmail(username)) {
+            showInputErrorMsg("email", "Invalid email address");
+            return;
+          }
+
+          if (!password) {
+            showInputErrorMsg("password", "Please enter password");
+            return;
+          }
+
+          button.disabled = true;
+          button.innerHTML = loadingEle;
+          webAuth.login(
+            {
+              realm: databaseConnection,
+              username: username,
+              password: password,
+              captcha: captcha.getValue(),
+            },
+            function (err) {
+              if (err) displayError(err);
+              button.disabled = false;
+              button.innerHTML = "Login";
+            }
+          );
+        }
+
+        function signup(e) {
+          e.preventDefault();
+          removeError();
+          hideInputErrorMsg();
+          var button = this;
+          var email = document.getElementById("email").value;
+          var password = document.getElementById("password").value;
+          var confirmPassword =
+            document.getElementById("confirm-password").value;
+
+          if (!email) {
+            showInputErrorMsg("email", "Please enter email");
+            return;
+          }
+
+          if (!validateEmail(email)) {
+            showInputErrorMsg("email", "Invalid email address");
+            return;
+          }
+
+          if (!password) {
+            showInputErrorMsg("password", "Please enter password");
+            return;
+          }
+
+          if (!confirmPassword) {
+            showInputErrorMsg(
+              "confirm-password",
+              "Please enter confirmed password"
+            );
+            return;
+          }
+
+          if (password !== confirmPassword) {
+            showInputErrorMsg("confirm-password", "Passwords do not match");
+            return;
+          }
+
+          button.disabled = true;
+          button.innerHTML = loadingEle;
+          webAuth.redirect.signupAndLogin(
+            {
+              connection: databaseConnection,
+              email: email,
+              password: password,
+              captcha: captcha.getValue(),
+            },
+            function (err) {
+              if (err) displayError(err);
+              button.disabled = false;
+              button.innerHTML = "Register";
+            }
+          );
+        }
+
+        function sendRecoveryEmail(e) {
+          e.preventDefault();
+          removeError();
+          hideInputErrorMsg();
+          var button = this;
+          var email = document.getElementById("email").value;
+
+          if (!email) {
+            showInputErrorMsg("email", "Please enter email");
+            return;
+          }
+
+          if (!validateEmail(email)) {
+            showInputErrorMsg("email", "Invalid email address");
+            return;
+          }
+
+          button.disabled = true;
+          button.innerHTML = loadingEle;
+          webAuth.changePassword(
+            {
+              connection: databaseConnection,
+              email: email,
+            },
+            function (err, resp) {
+              if (err) {
+                if (err) displayError(err);
+                button.disabled = false;
+                button.innerHTML = "Send Recovery Email";
+              } else {
+                document.getElementById("form").style.display = "none";
+                document.getElementById(
+                  "send-recovery-email-instruction"
+                ).innerHTML =
+                  resp +
+                  "<br/></br/>" +
+                  "If you don’t see this email in your inbox within 15 minutes, look for it in your junk mail folder. If you find it there, please mark it as “Not Junk”.";
+              }
+            }
+          );
+        }
+
+        function displayError(err) {
+          captcha.reload();
+          var errorMessage = document.getElementById("error-message");
+          errorMessage.innerHTML = err.policy || err.description;
+          errorMessage.style.display = "block";
+        }
+
+        function removeError() {
+          var errorMessage = document.getElementById("error-message");
+          errorMessage.innerHTML = "";
+          errorMessage.style.display = "none";
+        }
+
+        function showInputErrorMsg(id, message) {
+          var inputEle = document.getElementById(id);
+          var errMsgEle = document.getElementById(`form-error-msg-${id}`);
+          if (inputEle && errMsgEle) {
+            inputEle.classList.add("error");
+            errMsgEle.classList.add("error");
+            errMsgEle.innerHTML = message;
+          }
+        }
+
+        function hideInputErrorMsg() {
+          var inputEles = document.querySelectorAll(".form-main");
+          var errMsgEles = document.querySelectorAll(".form-error-msg");
+
+          for (var i = 0; i < inputEles.length; i++) {
+            inputEles[i].classList.remove("error");
+            errMsgEles[i].classList.remove("error");
+            errMsgEles[i].innerHTML = "";
+          }
+        }
+
+        var loginBtn = document.getElementById("btn-login");
+        if (loginBtn) {
+          loginBtn.addEventListener("click", login);
+        }
+
+        var signupBtn = document.getElementById("btn-signup");
+        if (signupBtn) {
+          signupBtn.addEventListener("click", signup);
+        }
+
+        var sendRecoveryEmailBtn = document.getElementById(
+          "btn-send-recovery-email"
+        );
+        if (sendRecoveryEmailBtn) {
+          sendRecoveryEmailBtn.addEventListener("click", sendRecoveryEmail);
+        }
+
+        var createAccountBtn = document.querySelector("#create-account-btn");
+        if (createAccountBtn) {
+          createAccountBtn.addEventListener("click", function () {
+            // show signup view
+            var url = new URL(window.location.href);
+            url.searchParams.set("prompt", "signup");
+            window.location = url.href;
+          });
+        }
+
+        var gotoLoginBtn = document.querySelector("#goto-login");
+        if (gotoLoginBtn) {
+          gotoLoginBtn.addEventListener("click", function () {
+            // show signup view
+            var url = new URL(window.location.href);
+            url.searchParams.set("prompt", "login");
+            window.location = url.href;
+          });
+        }
+
+        var gotoforgotPasswordBtn = document.querySelector(
+          "#forgot-password-btn"
+        );
+        if (gotoforgotPasswordBtn) {
+          gotoforgotPasswordBtn.addEventListener("click", function () {
+            // show forgot password view
+            var url = new URL(window.location.href);
+            url.searchParams.set("prompt", "send_reset_email");
+            window.location = url.href;
+          });
+        }
+
+        function validateEmail(email) {
+          return email.match(
+            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+        }
+      });
+    </script>
+  </body>
+</html>

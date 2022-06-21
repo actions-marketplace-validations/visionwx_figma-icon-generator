@@ -17,6 +17,9 @@ inputs:
   fontFamilyName:
     description: 'The Icon Font Family Name'
     required: true
+  cssClassPrefix:
+    description: 'The CSS Class Prefix'
+    required: true
   outputFolder:
     description: 'The Ouput Folder'
     required: true
